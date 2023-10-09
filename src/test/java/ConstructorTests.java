@@ -3,7 +3,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import pagemodels.MainPage;
+import constant.BaseUrl;
 
 public class ConstructorTests extends Driver {
 
@@ -13,7 +15,7 @@ public class ConstructorTests extends Driver {
     public void setUp() {
         webDriver();
         mainPage = new MainPage(driver);
-        driver.get("https://stellarburgers.nomoreparties.site");
+        driver.get(BaseUrl.BASE_URL);
     }
 
     @Test

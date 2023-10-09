@@ -1,41 +1,41 @@
 package user;
 
 import io.qameta.allure.Step;
-import io.restassured.response.Response;
-import constant.Endpoints;
+import io.restassured.response.ValidatableResponse;
 
-import static constant.BaseUrl.setUp;
+import static constant.BaseUrl.*;
+import static constant.Endpoints.*;
+
 import static io.restassured.RestAssured.given;
 
 public class UserStep {
 
     @Step("Регистрация пользователя")
-    public static Response createUser(UserData user) {
-        setUp();
+    public static ValidatableResponse createUser(UserData user) {
         return given()
-                .header("Content-type", "application/json")
+                .spec(requestSpecification())
                 .body(user)
                 .when()
-                .post(Endpoints.REGISTER_API);
+                .post(REGISTER_API)
+                .then();
     }
 
     @Step("Авторизация пользователем")
-    public static Response loginUser(UserData user) {
-        setUp();
+    public static ValidatableResponse loginUser(UserData user) {
         return given()
-                .header("Content-type", "application/json")
-                .and()
+                .spec(requestSpecification())
                 .body(user)
                 .when()
-                .post(Endpoints.LOGIN_API);
+                .post(LOGIN_API)
+                .then();
     }
-
     @Step("Удаление пользователя")
-    public static Response deleteUser(String accessToken) {
-        setUp();
+    public static ValidatableResponse deleteUser(UserData user, String token) {
         return given()
-                .header("Authorization", accessToken)
+                .spec(requestSpecificationAuth(token))
+                .body(user)
                 .when()
-                .delete(Endpoints.USER_API);
+                .delete(USER_API)
+                .then();
     }
 }

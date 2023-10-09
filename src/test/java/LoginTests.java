@@ -1,4 +1,5 @@
 import io.qameta.allure.junit4.DisplayName;
+import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,6 +10,7 @@ import pagemodels.MainPage;
 import pagemodels.PasswordRecoveryPage;
 import pagemodels.RegistrationPage;
 
+import constant.BaseUrl;
 import user.UserData;
 import user.UserStep;
 
@@ -17,10 +19,10 @@ public class LoginTests extends Driver {
     MainPage mainPage;
     LoginPage loginPage;
     RegistrationPage registrationPage;
-    UserData user;
     PasswordRecoveryPage passwordRecoveryPage;
-    String name;
+    UserData user;
     String email;
+    String name;
     String password;
 
     @Before
@@ -30,12 +32,12 @@ public class LoginTests extends Driver {
         loginPage = new LoginPage(driver);
         registrationPage = new RegistrationPage(driver);
         passwordRecoveryPage = new PasswordRecoveryPage(driver);
-        driver.get("https://stellarburgers.nomoreparties.site");
-        name = "BurgerTest";
-        email = "BurgerTest@yandex.ru";
-        password = "12345678";
-        user = new UserData(email, password, name);
+        driver.get(BaseUrl.BASE_URL);
+        user = UserData.generateUserRandom();
         UserStep.createUser(user);
+        email = user.getEmail();
+        password = user.getPassword();
+        name = user.getName();
     }
 
     @Test
@@ -69,7 +71,7 @@ public class LoginTests extends Driver {
         registrationPage.waitForLoadRegisterPage();
         registrationPage.clickLoginButton();
         loginPage.waitForLoad();
-        loginPage. fillLoginForm(email, password);
+        loginPage.fillLoginForm(email, password);
         loginPage.clickLoginButton();
         mainPage.waitForLoad();
         Assert.assertTrue("Кнопка оформить заказ не появилась", mainPage.isOrderButtonVisible());
@@ -92,9 +94,10 @@ public class LoginTests extends Driver {
 
     @After
     public void cleanUp() {
-        String token = UserStep.loginUser(new UserData(email, password)).then().extract().path("accessToken");
-        if (token != null) {
-            UserStep.deleteUser(token);
+        ValidatableResponse response = UserStep.loginUser(user);
+        int statusCode = response.extract().statusCode();
+        if (statusCode == 200) {
+            UserStep.deleteUser(user, response.extract().path("accessToken"));
         }
         driver.quit();
     }

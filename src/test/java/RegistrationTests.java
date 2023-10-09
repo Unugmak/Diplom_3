@@ -1,4 +1,5 @@
 import io.qameta.allure.junit4.DisplayName;
+import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,7 +10,7 @@ import pagemodels.RegistrationPage;
 
 import user.UserData;
 import user.UserStep;
-
+import constant.BaseUrl;
 public class RegistrationTests extends Driver {
 
     String name;
@@ -18,6 +19,7 @@ public class RegistrationTests extends Driver {
     MainPage mainPage;
     LoginPage loginPage;
     RegistrationPage registrationPage;
+    UserData user;
 
     @Before
     public void setUp() {
@@ -25,7 +27,7 @@ public class RegistrationTests extends Driver {
         mainPage = new MainPage(driver);
         loginPage = new LoginPage(driver);
         registrationPage = new RegistrationPage(driver);
-        driver.get("https://stellarburgers.nomoreparties.site");
+        driver.get(BaseUrl.BASE_URL);
         mainPage.clickLoginButton();
         loginPage.waitForLoad();
         loginPage.clickRegisterButton();
@@ -35,9 +37,10 @@ public class RegistrationTests extends Driver {
     @Test
     @DisplayName("Проверка успешной регистрации")
     public void checkSuccessfulRegistrationTest() {
-        name = "BurgerTest";
-        email = "BurgerTest@yandex.ru";
-        password = "123456789";
+        user = UserData.generateUserRandom();
+        email = user.getEmail();
+        password = user.getPassword();
+        name = user.getName();
         registrationPage.fillRegistrationForm(name, email, password);
         registrationPage.clickRegisterButton();
         loginPage.waitForLoad();
@@ -50,8 +53,9 @@ public class RegistrationTests extends Driver {
     @Test
     @DisplayName("Проверка регистрации с некорректным паролем")
     public void checkForBadPasswordLoginTest() {
-        name = "BurgerTest";
-        email = "BurgerTest@yandex.ru";
+        user = UserData.generateUserRandom();
+        email = user.getEmail();
+        name = user.getName();
         password = "123";
         registrationPage.fillRegistrationForm(name, email, password);
         registrationPage.clickRegisterButton();
@@ -61,9 +65,10 @@ public class RegistrationTests extends Driver {
 
     @After
     public void cleanUp() {
-        String token = UserStep.loginUser(new UserData(email, password)).then().extract().path("accessToken");
-        if (token != null) {
-            UserStep.deleteUser(token);
+        ValidatableResponse response = UserStep.loginUser(user);
+        int statusCode = response.extract().statusCode();
+        if (statusCode == 200) {
+            UserStep.deleteUser(user, response.extract().path("accessToken"));
         }
         driver.quit();
     }

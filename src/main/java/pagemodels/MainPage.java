@@ -8,18 +8,12 @@ public class MainPage  extends BasePage {
 
     private By loginButtonLocator = By.xpath("//button[text()='Войти в аккаунт']");
     private By personalButtonLocator = By.xpath("//p[text()='Личный Кабинет']");
-    private By activeBunButtonLocator = By.xpath("//div[@class='tab_tab__1SPyG " +
-            "tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Булки']");
-    private By inactiveBunButtonLocator = By.xpath("//div[@class='tab_tab__1SPyG  " +
-            "pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Булки']");
-    private By activeSauceButtonLocator = By.xpath("//div[@class='tab_tab__1SPyG " +
-            "tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Соусы']");
-    private By inactiveSauceButtonLocator = By.xpath("//div[@class='tab_tab__1SPyG  " +
-            "pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Соусы']");
-    private By activeFillingButtonLocator = By.xpath("//div[@class='tab_tab__1SPyG " +
-            "tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Начинки']");
-    private By inactiveFillingButtonLocator = By.xpath("//div[@class='tab_tab__1SPyG  " +
-            "pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Начинки']");
+    private By activeBunButtonLocator = By.xpath("//div[contains(@class,'current')]/span[text()='Булки']");
+    private By inactiveBunButtonLocator = By.xpath("//div[not(contains(@class, 'current'))]/span[text()='Булки']");
+    private By activeSauceButtonLocator = By.xpath("//div[contains(@class,'current')]/span[text()='Соусы']");
+    private By inactiveSauceButtonLocator = By.xpath("//div[not(contains(@class, 'current'))]/span[text()='Соусы']");
+    private By activeFillingButtonLocator = By.xpath("//div[contains(@class,'current')]/span[text()='Начинки']");
+    private By inactiveFillingButtonLocator = By.xpath("//div[not(contains(@class, 'current'))]/span[text()='Начинки']");
     private By makeBurgerLabelLocator = By.xpath("//h1[text()='Соберите бургер']");
     private By orderButtonLocator = By.xpath("//button[text()='Оформить заказ']");
     public MainPage(WebDriver driver) {
